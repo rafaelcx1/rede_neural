@@ -52,21 +52,34 @@ class Network:
             
         return outputs
     
-    def backpropLayer(self, actual_layer, last_layer):
-      for neuron in actual_layer:
-        for weight, neuronLastLayer in zip(neuron.weights, last_layer):
-          pass
+    def getGradients():
+      pass
+
+    def backpropLayer(self, actual_layer, last_layer, loss, learn_rate):
+      pass
+      # for neuron in actual_layer:
+      #   new_weights = []
+
+      #   for weight, neuronLastLayer in zip(neuron.weights, last_layer):
+      #     weightGrad = neuronLastLayer.output * deriv_sigmoid(neuron.sum)
+      #     new_weight = weight - (learn_rate * loss * weightGrad)
+      #     new_weights.append(new_weight)
+
+      #     lastNeuronGrad = weight * deriv_sigmoid(neuronLastLayer.output)
+        
+      #   biasGrad = deriv_sigmoid(neuron.bias)
+      #   newBias = learn_rate * loss * biasGrad
+        
+      #   neuron.update(new_weights, newBias)
+
 
     def train(self, inputs, correct_outputs, epochs, learn_rate):
       for epoch in range(epochs):
         for inputs, correctOutput in zip(inputs, correct_outputs):
-          network = Network(self.dimensions)
-          outputResult = network.feedForward(inputs)
+          outputResult = self.feedForward(inputs)
 
           loss = -2 * (correctOutput - outputResult)
-
-          for layerIndex in range(len(network.layers) - 1, 1):
-            backpropLayer(network.layers[layerIndex], network.layers[layerIndex - 1])
+          gradients = self.getGradients()
 
 
 

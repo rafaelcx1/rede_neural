@@ -15,3 +15,9 @@ class Neuron:
       self.outputCalculated = sigmoid(self.sum)
     
     return self.outputCalculated
+
+  def update(self, weights, bias):
+    self.weights = weights
+    self.bias = bias
+    self.outputCalculated = None
+    self.sum = None
