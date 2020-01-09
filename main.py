@@ -1,7 +1,12 @@
 ﻿import numpy as np
-from network import Network
-from neuron import Neuron
+from layer import Layer
 
-n = Network([2,2,1])
-n.feedForward([-2, -1])
-print(n.outputs)
+input = np.array([1, 1])
+
+layer: Layer = Layer(2, 2)
+
+print(layer.feed_forward(input))
+
+# for layer in layers:
+#     input = np.dot(layer['weights'], input.T) + layer['bias']
+#     print(type(layer['weights']))

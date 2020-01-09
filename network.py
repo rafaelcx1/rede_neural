@@ -1,85 +1,32 @@
-﻿import numpy as np
-from neuron import Neuron
-from operations import deriv_sigmoid
+﻿from numpy import ndarray
+from layer import Layer
 
 class Network:
-    def __init__(self, layersDimensions):
-        self.dimensions = layersDimensions
-        self.outputs = []
-        self.layers = []
-        self.initializeLayers(layersDimensions)
-        
-    def initializeLayers(self, layersDimensions):
-        for layerIndex in range(1, len(layersDimensions)):
-            layer = []
-            
-            for indexNeuron in range(1, layersDimensions[layerIndex] + 1):
-                lastLayerDimension = layersDimensions[layerIndex - 1]
-                actualLayerDimension = layersDimensions[layerIndex]
+  def __init__(self):
+    self.dimensions = None
+    self.layers = None
+  
+  @staticmethod
+  def create(dimensions: []):
+    network = Network()
+    network.dimensions = dimensions
+    network.layers = []
 
-                weights = np.random.random(lastLayerDimension)
-                bias = np.random.random()
-                neuron = Neuron(weights, bias)
-                
-                layer.append(neuron)
-                
-            self.layers.append(layer)
+    for dimension_index in range(1, len(dimensions)):
+      last_dimension = dimensions[dimension_index - 1]
+      actual_dimension = dimensions[dimension_index]
+
+      network.layers.append(Layer(actual_dimension, last_dimension))
     
-    def showLayers(self):
-        l = 1
-        for layer in self.layers:
-            print('layer: ' + str(l))
-            i = 1
-            l += 1
-            for neuron in layer:
-                print('neuron ' + str(i) + ': ')
-                print(neuron.weights)
-                print(neuron.bias)
-                print('---')
-                i += 1
+    return network
+
+  def print(self) -> None:
+    for index in range(0, len(self.layers)):
+      print('Layer: ' + str(index + 1))
+      self.layers[index].print()
+
+  def feed_forward(self, input: ndarray) -> ndarray:
+    for layer in self.layers:
+      input = layer.feed_forward(input)
     
-    def feedForward(self, inputs):
-        nextInput = inputs
-        
-        for layer in self.layers:
-            outputs = []
-            
-            for neuron in layer:
-                outputs.append(neuron.output(nextInput))
-            
-            nextInput = outputs
-            self.outputs.append(outputs)
-            
-        return outputs
-    
-    def getGradients():
-      pass
-
-    def backpropLayer(self, actual_layer, last_layer, loss, learn_rate):
-      pass
-      # for neuron in actual_layer:
-      #   new_weights = []
-
-      #   for weight, neuronLastLayer in zip(neuron.weights, last_layer):
-      #     weightGrad = neuronLastLayer.output * deriv_sigmoid(neuron.sum)
-      #     new_weight = weight - (learn_rate * loss * weightGrad)
-      #     new_weights.append(new_weight)
-
-      #     lastNeuronGrad = weight * deriv_sigmoid(neuronLastLayer.output)
-        
-      #   biasGrad = deriv_sigmoid(neuron.bias)
-      #   newBias = learn_rate * loss * biasGrad
-        
-      #   neuron.update(new_weights, newBias)
-
-
-    def train(self, inputs, correct_outputs, epochs, learn_rate):
-      for epoch in range(epochs):
-        for inputs, correctOutput in zip(inputs, correct_outputs):
-          outputResult = self.feedForward(inputs)
-
-          loss = -2 * (correctOutput - outputResult)
-          gradients = self.getGradients()
-
-
-
+    return input
