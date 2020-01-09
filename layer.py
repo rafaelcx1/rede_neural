@@ -5,7 +5,7 @@ from operations import sigmoid
 class Layer:
   def __init__(self, neurons_qtd: int, last_neuron_layer_qtd: int):
     self.weights = np.random.random((neurons_qtd, last_neuron_layer_qtd))
-    self.bias = np.random.randint(0, 4, neurons_qtd)
+    self.bias = np.zeros(neurons_qtd)
     self.sum_cache = np.array([])
     self.output_cache = np.array([])
   

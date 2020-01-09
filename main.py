@@ -1,12 +1,21 @@
 ﻿import numpy as np
-from layer import Layer
+from network import Network
 
-input = np.array([1, 1])
+inputs = np.array([
+  [0,0,0,0],
+  [0,1,0,0],
+  [1,0,0,0],
+  [1,1,0,0]
+])
 
-layer: Layer = Layer(2, 2)
+outputs = np.array([
+  [0],
+  [0],
+  [1],
+  [1]
+])
 
-print(layer.feed_forward(input))
+network = Network.create([4,4,4,1])
 
-# for layer in layers:
-#     input = np.dot(layer['weights'], input.T) + layer['bias']
-#     print(type(layer['weights']))
+network.train(inputs, outputs, 1, 0.1)
+print(network.predict(np.array([1, 0, 0, 0])))
