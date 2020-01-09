@@ -1,23 +1,24 @@
-﻿import numpy as np
+import numpy as np
+from numpy import ndarray
 from operations import sigmoid
 
-class Neuron:
-  def __init__(self, weights, bias):
-    self.weights = np.array([1,1]) #weights
-    self.bias = 0 #bias
-    self.outputCalculated = None
-    self.sum = None
+class Layer:
+  def __init__(self, neurons_qtd: int, last_neuron_layer_qtd: int):
+    self.weights = np.random.random((neurons_qtd, last_neuron_layer_qtd))
+    self.bias = np.random.randint(0, 4, neurons_qtd)
+    self.sum_cache = np.array([])
+    self.output_cache = np.array([])
+  
+  def feed_forward(self, input: ndarray) -> ndarray:
+    self.sum_cache = np.dot(self.weights, input.T) + self.bias
+    self.output_cache = sigmoid(self.sum_cache)
+    return self.output_cache
 
-  def output(self, inputs):
-    if self.outputCalculated is None:
-      total = np.dot(self.weights, inputs) + self.bias
-      self.sum = total
-      self.outputCalculated = sigmoid(self.sum)
-    
-    return self.outputCalculated
-
-  def update(self, weights, bias):
-    self.weights = weights
-    self.bias = bias
-    self.outputCalculated = None
-    self.sum = None
+  def print(self) -> None:
+    text = (
+        'weights: ' + str(self.weights),
+        'bias: ' + str(self.bias),
+        'sum_cache: ' + str(self.sum_cache),
+        'output_cache: ' + str(self.output_cache)
+    )
+    print(str(text) + '\n')
