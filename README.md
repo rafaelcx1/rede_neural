@@ -1,13 +1,13 @@
-OutputDerivada:  soma (InputDerivada * Peso)
-QuantidadeErroDerivada: numero de derivadas acumuladas
-ErroDerivadaAcumuladas: soma de todos ErroDerivada
-ErroDerivada: inputDer * ultimoNode[Output]
-QuantidadeInputDerivada: numero de InputDerivadaAcumuladas
-InputDerivadaAcumuladas: soma de todos InputDerivada
-InputDerivada: ativacao_derivada(somas_antes_da_ativacao) * OutputDerivada
-UltimoLayer[OutputDerivada]: função_do_erro_derivada(output, previsto)
-Output: ativação(somas_antes_da_ativacao)
-somas_antes_da_ativacao: pesos * inputs + bias
+- OutputDerivada:  soma (InputDerivada * Peso)
+- QuantidadeErroDerivada: numero de derivadas acumuladas
+- ErroDerivadaAcumuladas: soma de todos ErroDerivada
+- ErroDerivada: inputDer * ultimoNode[Output]
+- QuantidadeInputDerivada: numero de InputDerivadaAcumuladas
+- InputDerivadaAcumuladas: soma de todos InputDerivada
+- InputDerivada: ativacao_derivada(somas_antes_da_ativacao) * OutputDerivada
+- UltimoLayer[OutputDerivada]: função_do_erro_derivada(output, previsto)
+- Output: ativação(somas_antes_da_ativacao)
+- somas_antes_da_ativacao: pesos * inputs + bias
 
 
 Backpropagation: 
