@@ -38,45 +38,45 @@ class Network:
     
     return input
 
-  def train(self, inputs, outputs, epochs, learning_rate) -> None:
-    for epoch in range(1, epochs + 1):
-      for input, output in zip(inputs, outputs):
-        predicts = self.feed_forward(input)
-        weights_gradients = self.get_grads(input, output, predicts, learning_rate)
-        
-        for w_grad, layer in zip(weights_gradients, self.layers):
-          layer.weights -= w_grad
-
   def predict(self, input) -> ndarray:
     return self.feed_forward(input)
 
-  def get_grads(self, input, output, predicts, learning_rate):
-    layers = self.layers
-    d_loss = 2 * (output - predicts)
-    d_predicts = deriv_sigmoid(predicts)
+  def train(self, inputs, outputs, learning_rate, epochs) -> None:
+    for epoch in range(epochs + 1):
+      for input, output in zip(inputs, outputs):
+        print('Epoch: ' + str(epoch + 1))
+        self.feed_forward(input)
+        self.backprop(input, output)
+        self.update_weights(learning_rate)
 
-    d_weights = []
-    
-    for layer_index in range(len(layers) - 1, -1, -1):
-      is_output_layer: bool = layer_index == len(layers) - 1
-      is_input_layer: bool = layer_index == 0
+  def backprop(self, input, output) -> None:
 
-      last_layer_outputs = None
-      next_layer_weights = None
-      middle_formula = None
+    qtd_layers = len(self.layers)
 
-      if is_input_layer:
-        last_layer_outputs = np.array([input])
+    last_layer = self.layers[qtd_layers - 1]
+    last_layer.output_derivative = last_layer.output_cache - output
+
+    for layer_index in range(qtd_layers - 1, -1, -1):
+      layer = self.layers[layer_index]
+      input_derivative = np.dot(deriv_sigmoid(layer.sum_cache), layer.output_derivative)
+
+      layer.input_derivative += input_derivative
+
+      last_output = None
+
+      if layer_index == 0:
+        last_output = input
       else:
-        last_layer_outputs = layers[layer_index - 1].output_cache
+        last_layer = self.layers[layer_index - 1]
+        last_layer.output_derivative += np.dot(input_derivative, layer.weights)
+        last_output = last_layer.output_cache
 
-      if is_output_layer:
-        middle_formula = d_loss * d_predicts
-      else:
-        next_layer_weights = layers[layer_index + 1].weights
-        middle_formula = np.dot(d_loss * d_predicts, next_layer_weights) * np.array([deriv_sigmoid(layers[layer_index].output_cache)])
+      error_derivative = input_derivative * last_output
 
-      d_weights.append(learning_rate * np.dot(np.array([last_layer_outputs]).T, np.array([middle_formula])))
-    
-    return d_weights
+      layer.error_derivative += error_derivative
 
+  def update_weights(self, learning_rate) -> None:
+    for layer in self.layers:
+      layer.weights -= learning_rate * layer.error_derivative
+      layer.bias -= learning_rate * layer.input_derivative
+      

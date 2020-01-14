@@ -8,6 +8,9 @@ class Layer:
     self.bias = np.zeros(neurons_qtd)
     self.sum_cache = np.array([])
     self.output_cache = np.array([])
+    self.error_derivative = np.zeros(self.weights.shape)
+    self.output_derivative = np.zeros(self.weights.shape)
+    self.input_derivative = np.zeros(neurons_qtd)
   
   def feed_forward(self, input: ndarray) -> ndarray:
     self.sum_cache = np.dot(self.weights, input.T) + self.bias
