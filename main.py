@@ -15,6 +15,7 @@ outputs = np.array([
   [0]
 ])
 
-network = Network.create([2,2,1])
-network.train(inputs, outputs, 0.1, 500)
+network = Network.create([2,3,1])
+network.print()
+network.train(inputs, outputs, 0.1, 50000)
 print(network.feed_forward(inputs[0]))

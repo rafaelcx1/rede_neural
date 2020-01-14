@@ -1,5 +1,6 @@
 ﻿import numpy as np
 from operations import deriv_sigmoid
+from operations import mse_loss
 from numpy import ndarray
 from layer import Layer
 
@@ -27,7 +28,7 @@ class Network:
     print('Input Layer | Dimension: ' + str(self.dimensions[0]) + '\n')
 
     for index in range(0, len(self.layers)):
-      print('Layer: ' + str(index + 1), ' | Dimension: ' + str(self.dimensions[index] + 1))
+      print('Layer: ' + str(index + 1), ' | Dimension: ' + str(self.dimensions[index + 1]))
       self.layers[index].print()
 
   def feed_forward(self, input: ndarray) -> ndarray:
@@ -43,11 +44,17 @@ class Network:
 
   def train(self, inputs, outputs, learning_rate, epochs) -> None:
     for epoch in range(epochs + 1):
+      print('Epoch: ' + str(epoch + 1))
+      loss = 0
+      
       for input, output in zip(inputs, outputs):
-        print('Epoch: ' + str(epoch + 1))
-        self.feed_forward(input)
+        output_predict = self.feed_forward(input)
+        loss += mse_loss(output, output_predict)
+        
         self.backprop(input, output)
         self.update_weights(learning_rate)
+        
+      print('Loss: ' + str(loss / len(outputs)))
 
   def backprop(self, input, output) -> None:
 
@@ -58,9 +65,9 @@ class Network:
 
     for layer_index in range(qtd_layers - 1, -1, -1):
       layer = self.layers[layer_index]
-      input_derivative = np.dot(deriv_sigmoid(layer.sum_cache), layer.output_derivative)
-
-      layer.input_derivative += input_derivative
+      
+      input_derivative = np.dot(deriv_sigmoid(layer.sum_cache), layer.output_derivative.T)
+      layer.input_derivative = layer.input_derivative + input_derivative
 
       last_output = None
 
@@ -68,15 +75,14 @@ class Network:
         last_output = input
       else:
         last_layer = self.layers[layer_index - 1]
-        last_layer.output_derivative += np.dot(input_derivative, layer.weights)
+        last_layer.output_derivative = last_layer.output_derivative + np.dot(input_derivative, layer.weights).T.sum(axis=1)
         last_output = last_layer.output_cache
 
       error_derivative = input_derivative * last_output
-
-      layer.error_derivative += error_derivative
+      layer.error_derivative = layer.error_derivative + error_derivative
 
   def update_weights(self, learning_rate) -> None:
     for layer in self.layers:
-      layer.weights -= learning_rate * layer.error_derivative
-      layer.bias -= learning_rate * layer.input_derivative
+        layer.weights = layer.weights - learning_rate * layer.error_derivative
+        layer.bias = np.reshape(layer.bias - learning_rate * layer.input_derivative, layer.bias.shape)
       
