@@ -42,8 +42,9 @@ class Network:
   def predict(self, input) -> ndarray:
     return self.feed_forward(input)
 
-  def train(self, inputs, outputs, learning_rate, epochs) -> None:
-    for epoch in range(epochs + 1):
+  def train(self, inputs, outputs, learning_rate, epochs, loss_max = None) -> list:
+    losses = []
+    for epoch in range(epochs):
       print('Epoch: ' + str(epoch + 1))
       loss = 0
       
@@ -53,8 +54,15 @@ class Network:
         
         self.backprop(input, output)
         self.update_weights(learning_rate)
-        
-      print('Loss: ' + str(loss / len(outputs)))
+
+      loss /= len(outputs)
+      losses.append(loss)
+      print('Loss: ' + str(loss), end='\n\n')
+
+      if loss_max != None and loss < loss_max:
+        break
+
+    return losses
 
   def backprop(self, input, output) -> None:
 
@@ -66,7 +74,7 @@ class Network:
     for layer_index in range(qtd_layers - 1, -1, -1):
       layer = self.layers[layer_index]
       
-      input_derivative = np.dot(deriv_sigmoid(layer.sum_cache), layer.output_derivative.T)
+      input_derivative = np.multiply(deriv_sigmoid(layer.sum_cache), layer.output_derivative)
       layer.input_derivative = layer.input_derivative + input_derivative
 
       last_output = None
@@ -75,14 +83,15 @@ class Network:
         last_output = input
       else:
         last_layer = self.layers[layer_index - 1]
-        last_layer.output_derivative = last_layer.output_derivative + np.dot(input_derivative, layer.weights).T.sum(axis=1)
+        last_layer.output_derivative = last_layer.output_derivative + np.multiply(input_derivative, layer.weights.T).sum(axis=1)
         last_output = last_layer.output_cache
 
-      error_derivative = input_derivative * last_output
+      error_derivative = input_derivative.T * last_output
       layer.error_derivative = layer.error_derivative + error_derivative
 
   def update_weights(self, learning_rate) -> None:
     for layer in self.layers:
         layer.weights = layer.weights - learning_rate * layer.error_derivative
         layer.bias = np.reshape(layer.bias - learning_rate * layer.input_derivative, layer.bias.shape)
+        layer.clean_derivatives()
       

@@ -1,4 +1,5 @@
 ﻿import numpy as np
+import matplotlib.pyplot as plt
 from network import Network
 
 inputs = np.array([
@@ -15,7 +16,10 @@ outputs = np.array([
   [0]
 ])
 
+
 network = Network.create([2,3,1])
 network.print()
-network.train(inputs, outputs, 0.1, 50000)
-print(network.feed_forward(inputs[0]))
+losses = network.train(inputs, outputs, 0.1, 100000)
+
+plt.plot(losses);
+plt.show()
