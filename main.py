@@ -1,25 +1,64 @@
-﻿import numpy as np
+﻿import pickle
+import numpy as np
 import matplotlib.pyplot as plt
 from network import Network
 
-inputs = np.array([
-  [0,0],
-  [0,1],
-  [1,0],
-  [1,1]
-])
+def make_output(n):
+  result = np.zeros((1, 10))
+  result.itemset(int(n), 1.0)
+  return result
 
-outputs = np.array([
-  [0],
-  [1],
-  [1],
-  [0]
-])
+def get_outputs(labels):
+  result = np.array(make_output(labels.item(0)))
+  labels = np.delete(labels, (0), axis=0)
+  
+  for label in labels:
+    result = np.append(result, make_output(label), axis=0)
 
+  return result
 
-network = Network.create([2,3,1])
-network.print()
-losses = network.train(inputs, outputs, 0.1, 100000)
+numbers_labels = np.array([
+    list(
+        open('data\\train-labels.idx1-ubyte', 'rb').read()[8:]
+    )
+]).T
 
-plt.plot(losses);
+numbers = np.array([
+    list(
+        open('data\\train-images.idx3-ubyte', 'rb').read()[16:]
+    )
+]).T
+
+image_size = 28 * 28
+qtd_images = int(len(numbers) / image_size)
+
+inputs = numbers.reshape((qtd_images, image_size)) / 255
+#outputs = get_outputs(numbers_labels)
+
+#print(inputs.shape)
+#print(outputs.shape)
+
+#network = Network.create([784, 256, 128, 10])
+#losses = network.train(inputs[0:10000], outputs[0:10000], 0.1, 15)
+
+# with open('net.ser', 'wb') as file:
+#   pickle.dump(network, file)
+
+# with open('last_losses.ser', 'wb') as file:
+#   pickle.dump(losses, file)
+
+with open('net.ser', 'rb') as file:
+  network = pickle.load(file)
+
+with open('last_losses.ser', 'rb') as file:
+  losses = pickle.load(file)
+
+plt.imshow((np.array([inputs[700]]) * 255).reshape((28,28)))
+plt.show()
+
+plt.subplot(121)
+plt.bar(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], network.predict(inputs[700])[0])
+plt.subplot(122)
+plt.imshow((np.array([inputs[700]]) * 255).reshape((28,28)))
+plt.suptitle('Resultado')
 plt.show()
