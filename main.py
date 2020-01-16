@@ -53,12 +53,14 @@ with open('net.ser', 'rb') as file:
 with open('last_losses.ser', 'rb') as file:
   losses = pickle.load(file)
 
-plt.imshow((np.array([inputs[700]]) * 255).reshape((28,28)))
+img_to_predict = 700
+
+plt.imshow((np.array([inputs[img_to_predict]])).reshape((28,28)))
 plt.show()
 
 plt.subplot(121)
-plt.bar(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], network.predict(inputs[700])[0])
+plt.bar(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], network.predict(inputs[img_to_predict])[0])
 plt.subplot(122)
-plt.imshow((np.array([inputs[700]]) * 255).reshape((28,28)))
+plt.imshow((np.array([inputs[img_to_predict]])).reshape((28,28)))
 plt.suptitle('Resultado')
 plt.show()
